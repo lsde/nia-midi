@@ -6,6 +6,8 @@ It sends-out the "brain-fingers" as MIDI notes via the first available MIDI devi
 Based on https://github.com/kevinmershon/pynia
 
 ## Prerequities
+Since the main loop is written using pyglet framework, the application needs an X server.
+On headless setups, this can be mitigated by using xvfb.
 ```
 # apt install python-virtualenv python3-virtualenv rtmidi xvfb
 # cp 47-ocz-nia.rules /etc/udev/rules.d/`
