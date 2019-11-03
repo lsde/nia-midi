@@ -24,15 +24,14 @@ def update(x):
     # get the fourier data from the NIA
     data, steps = nia_data.fourier(nia_data)
     print(steps)
-    with midiout:
-        for step in steps:
-            nia_note = int(step) * 12
-            note_on = [0x90, nia_note, 112] # channel 1, XXX, velocity 112
-            note_off = [0x80, nia_note, 0]
-            midiout.send_message(note_on)
-            time.sleep(0.01)
-            midiout.send_message(note_off)
-            time.sleep(0.01)
+    for step in steps:
+        nia_note = int(step) * 12
+        note_on = [0x90, nia_note, 112] # channel 1, XXX, velocity 112
+        note_off = [0x80, nia_note, 0]
+        midiout.send_message(note_on)
+        time.sleep(0.01)
+        midiout.send_message(note_off)
+        time.sleep(0.01)
 
     # wait for the next batch of data to come in
     data_thread.join()
@@ -56,7 +55,7 @@ if __name__ == "__main__":
     available_ports = midiout.get_ports()
     print(available_ports)
 
-    if available_ports: midiout.open_port(0)
+    if available_ports: midiout.open_port(1)
     else: midiout.open_virtual_port("nia-midi")
 
     # start collecting data
@@ -64,8 +63,9 @@ if __name__ == "__main__":
     nia_data = NIA.NiaData(nia, milliseconds)
 
     # open a window and schedule continuous updates
-    pyglet.clock.schedule(update)
-    pyglet.app.run()
+    with midiout:
+        pyglet.clock.schedule(update)
+        pyglet.app.run()
 
     # when pyglet exits, close out the NIA and exit gracefully
     del midiout
